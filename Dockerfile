@@ -15,7 +15,7 @@ ENV SIPP_VERSION=${SIPP_VERSION}
 
 # Download the official SIPp binary, make it executable, and move to /usr/local/bin
 # RUN wget https://github.com/SIPp/sipp/releases/download/v${SIPP_VERSION}/sipp-v${SIPP_VERSION}.tar.gz -O /tmp/sipp.tar.gz && \
-RUN wget https://github.com/SIPp/sipp/releases/download/v${SIPP_VERSION}/sipp -O /usr/local/bin/sipp && \
+RUN wget https://github.com/SIPp/sipp/releases/download/${SIPP_VERSION}/sipp -O /usr/local/bin/sipp && \
     chmod +x /usr/local/bin/sipp
 
 # Set the entrypoint to sipp
