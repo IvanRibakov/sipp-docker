@@ -1,15 +1,21 @@
 # sipp-alpine
-A minimal Alpine Linux based Docker image for the SIPp traffic generator. This image is built by downloading the official sipp binary from the official SIPp releases.
+A minimal Alpine Linux based Docker image for the SIPp traffic generator. This image is built from official SIPp sources with TLS support enabled.
 
 ## Overview
-The primary goal of this repository is to provide a lightweight and up-to-date Docker image for SIPp. Instead of compiling from source, which can be time-consuming, this image downloads the latest stable, pre-compiled binary directly from the official SIPp GitHub releases.
+The primary goal of this repository is to provide a lightweight and up-to-date Docker image for SIPp with full TLS/SSL support. This image compiles SIPp from source using a multi-stage Docker build, ensuring a minimal final image size while including essential features like TLS encryption and PCAP support.
 
 This project automates the build and deployment process using GitHub Actions, publishing the resulting image to both GitHub Container Registry (GHCR) and Docker Hub.
 
 ## Features
 Minimal Base Image: Uses alpine for a small footprint.
 
-Official Binary: Downloads and uses the official sipp binary.
+Built from Source: Compiles SIPp from official sources with TLS/SSL support enabled.
+
+TLS Support: Full support for SIP over TLS (SIPS) for secure communications.
+
+PCAP Support: Includes libpcap for packet capture capabilities.
+
+Multi-stage Build: Uses Docker multi-stage builds to minimize final image size.
 
 Automated Builds: CI/CD pipeline with GitHub Actions.
 
