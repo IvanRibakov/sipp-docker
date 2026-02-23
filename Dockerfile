@@ -1,25 +1,42 @@
-# Use Alpine as a minimal base image
-FROM alpine:3.20
+# --- Stage 1: The Builder ---
+FROM alpine:3.23 AS builder
 
-# Install necessary dependencies
-# wget for downloading, libpcap for sipp to run with PCAP support
+# Install build dependencies
 RUN apk add --no-cache \
-    wget \
-    libpcap \
+    build-base \
+    cmake \
+    make \
+    ncurses-dev \
     openssl-dev \
-    ncurses-dev
+    libpcap-dev \
+    curl \
+    tar
 
-# Set build arguments for SIPp version
-ARG SIPP_VERSION
+# Define the SIPp version
+ARG SIPP_VERSION=v3.7.7
 ENV SIPP_VERSION=${SIPP_VERSION}
 
-# Download the official SIPp binary, make it executable, and move to /usr/local/bin
-# RUN wget https://github.com/SIPp/sipp/releases/download/v${SIPP_VERSION}/sipp-v${SIPP_VERSION}.tar.gz -O /tmp/sipp.tar.gz && \
-RUN wget https://github.com/SIPp/sipp/releases/download/${SIPP_VERSION}/sipp -O /usr/local/bin/sipp && \
-    chmod +x /usr/local/bin/sipp
+# Download and extract the source tarball
+WORKDIR /src
+RUN curl -L https://github.com/SIPp/sipp/releases/download/${SIPP_VERSION}/sipp-${SIPP_VERSION#v}.tar.gz | tar xz --strip-components=1
 
-# Set the entrypoint to sipp
+# Compile with TLS support
+RUN mkdir build && cd build \
+    && cmake .. -DUSE_SSL=KL -DUSE_PCAP=1 \
+    && make
+
+# --- Stage 2: The Final Minimal Image ---
+FROM alpine:3.23
+
+# Install only essential runtime libraries
+RUN apk add --no-cache \
+    libstdc++ \
+    ncurses-libs \
+    openssl \
+    libpcap
+
+# Copy only the binary
+COPY --from=builder /src/build/sipp /usr/local/bin/sipp
+
 ENTRYPOINT ["sipp"]
-
-# By default, display the help message
 CMD ["-h"]
